@@ -28,6 +28,10 @@ if [ -f "CLAUDE.md" ]; then
     TARGET="claude"
 elif [ -f "GEMINI.md" ]; then
     TARGET="gemini"
+elif [ -f ".cursorrules" ]; then
+    TARGET="cursor"
+elif [ -f ".codexrules" ]; then
+    TARGET="codex"
 elif [ -f "AGENTS.md" ]; then
     TARGET="antigravity"
 fi

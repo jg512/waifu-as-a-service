@@ -46,8 +46,13 @@ if [ "$TARGET" == "claude" ]; then
     TEMPLATE="$WAAS_ROOT/templates/CLAUDE.template.md"
 elif [ "$TARGET" == "gemini" ]; then
     OUT_FILE="GEMINI.md"
-    # Gemini uses the same markdown structure as Antigravity for simplicity in this joke repo
     TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md" 
+elif [ "$TARGET" == "cursor" ]; then
+    OUT_FILE=".cursorrules"
+    TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"
+elif [ "$TARGET" == "codex" ]; then
+    OUT_FILE=".codexrules"
+    TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"
 elif [ "$TARGET" == "antigravity" ]; then
     OUT_FILE="AGENTS.md"
     TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"

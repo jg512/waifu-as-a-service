@@ -2,13 +2,19 @@
 
 > Enterprise-grade anime personality orchestration for AI coding agents.
 
-> Deploy anime archetypes to Claude Code, Gemini CLI, and other coding agents without sacrificing technical competence.
+> Deploy anime archetypes to Claude Code, Gemini CLI, Cursor, and Codex extensions without sacrificing technical competence.
+
+<div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Personality Packs](https://img.shields.io/badge/Archetypes-10_Available-ff69b4.svg)](#archetype-matrix)
-[![Claude Code Compatible](https://img.shields.io/badge/Claude_Code-Compatible-6b4dff.svg)](#installation--usage)
-[![Gemini CLI Compatible](https://img.shields.io/badge/Gemini_CLI-Ready-4285F4.svg)](#installation--usage)
-[![Antigravity Compatible](https://img.shields.io/badge/Antigravity-Supported-000000.svg)](#installation--usage)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Compatible-6b4dff.svg)](#deploying-to-claude-code)
+[![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-Ready-4285F4.svg)](#deploying-to-gemini-cli)
+[![Cursor & Codex](https://img.shields.io/badge/Cursor_%26_Codex-Supported-222222.svg)](#deploying-to-cursor--codex)
+[![Antigravity](https://img.shields.io/badge/Antigravity-Supported-000000.svg)](#deploying-to-antigravity-cli)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](#contributing)
+
+</div>
 
 ## What Is WaaS
 
@@ -28,7 +34,7 @@ WaaS is designed to integrate seamlessly with agents that utilize workspace cont
 ### Global Installation (Clone)
 
 ```bash
-git clone https://github.com/yourusername/waifu-as-a-service.git ~/.waas
+git clone https://github.com/jg512/waifu-as-a-service.git ~/.waas
 cd ~/.waas
 ```
 
@@ -49,11 +55,22 @@ cd /path/to/your/project
 Gemini CLI reads instructions from `GEMINI.md`.
 
 ```bash
-# Navigate to your project repository
+cd /path/to/your/project
+~/.waas/scripts/install.sh kuudere --target=gemini
+```
+
+### Deploying to Cursor & Codex
+
+Cursor uses `.cursorrules` for project-wide instructions. Many Codex-based extensions look for similar context files. WaaS natively supports injecting the Dere Runtime™ into these rulesets.
+
+```bash
 cd /path/to/your/project
 
-# Deploy the overlay
-~/.waas/scripts/install.sh kuudere --target=gemini
+# For Cursor (.cursorrules)
+~/.waas/scripts/install.sh onee-san --target=cursor
+
+# For generic Codex extensions (.codexrules)
+~/.waas/scripts/install.sh senpai --target=codex
 ```
 
 ### Deploying to Antigravity CLI
@@ -61,11 +78,8 @@ cd /path/to/your/project
 Antigravity uses `AGENTS.md` (or similar project-specific instructional files).
 
 ```bash
-# Navigate to your project repository
 cd /path/to/your/project
-
-# Deploy the overlay
-~/.waas/scripts/install.sh onee-san --target=antigravity
+~/.waas/scripts/install.sh maid --target=antigravity
 ```
 
 ### Switching Personalities

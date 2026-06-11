@@ -29,65 +29,112 @@ All WaaS archetypes are rigorously engineered to prioritize technical accuracy, 
 
 ## Installation & Usage
 
-WaaS is designed to integrate seamlessly with agents that utilize workspace context files (like `CLAUDE.md`, `GEMINI.md`, or `.cursorrules`).
+WaaS is designed to integrate seamlessly with agents that utilize workspace context files (like `CLAUDE.md`, `GEMINI.md`, or `.cursorrules`). We have introduced a Kubernetes-style `waas` CLI for seamless deployments.
 
 ### Global Installation (Clone)
 
 ```bash
 git clone https://github.com/jg512/waifu-as-a-service.git ~/.waas
-cd ~/.waas
+export PATH="$PATH:$HOME/.waas"
 ```
 
-### Deploying to Claude Code
+*(You can now use the `waas` command anywhere).*
 
-Claude Code reads instructions from `CLAUDE.md`.
+### Single-Agent Mode (Default)
+
+Deploys a single archetype overlay.
 
 ```bash
 # Navigate to your project repository
 cd /path/to/your/project
 
-# Run the deployment script and target your preferred archetype
-~/.waas/scripts/install.sh tsundere --target=claude
+# Claude Code
+waas deploy tsundere --target=claude
+
+# Cursor
+waas deploy onee-san --target=cursor
+
+# Gemini CLI
+waas deploy kuudere --target=gemini
+
+# Generic Codex extension
+waas deploy senpai --target=codex
 ```
 
-### Deploying to Gemini CLI
+## Multi-Agent Harem Mode
 
-Gemini CLI reads instructions from `GEMINI.md`.
+For workloads that require maximum overthinking, WaaS supports multi-agent dere orchestration. 
 
-```bash
-cd /path/to/your/project
-~/.waas/scripts/install.sh kuudere --target=gemini
+Harem Mode allows multiple archetypes to independently evaluate a problem before producing a Harem Consensus Engine™ recommendation.
+
+Think:
+- Architecture review boards
+- Incident response teams
+- Design review committees
+
+...but anime harem themed.
+
+### Enterprise Architecture
+
+```text
+                User Request
+                      │
+                      ▼
+             Harem Runtime™
+                      │
+      ┌───────────────┼───────────────┐
+      ▼               ▼               ▼
+  Tsundere       Kuudere         Chuuni
+ Reviewer        Debugger       Architect
+
+      └───────────────┼───────────────┘
+                      ▼
+             Harem Consensus Engine™
+                      │
+                      ▼
+                Final Answer
 ```
 
-### Deploying to Cursor & Codex
-
-Cursor uses `.cursorrules` for project-wide instructions. Many Codex-based extensions look for similar context files. WaaS natively supports injecting the Dere Runtime™ into these rulesets.
+### Deploying Prebuilt Harems
 
 ```bash
-cd /path/to/your/project
+# Bug Extermination Squad (Tsundere, Kuudere, Yandere)
+waas deploy harem bug-extermination-squad --target=cursor
 
-# For Cursor (.cursorrules)
-~/.waas/scripts/install.sh onee-san --target=cursor
+# Architecture Board (Kuudere, Senpai, Chuuni, Onee-san)
+waas deploy harem architecture-board --target=claude
 
-# For generic Codex extensions (.codexrules)
-~/.waas/scripts/install.sh senpai --target=codex
+# Incident Command (Kuudere, Senpai, Onee-san)
+waas deploy harem incident-command --target=gemini
+
+# Frontend Disaster Response (Gyaru, Genki, Tsundere)
+waas deploy harem frontend-disaster-response --target=codex
+
+# Maximum Brainrot (Experimental: 5 Archetypes)
+waas deploy harem maximum-brainrot --target=claude
 ```
 
-### Deploying to Antigravity CLI
+## WaaS CLI Operations
 
-Antigravity uses `AGENTS.md` (or similar project-specific instructional files).
+WaaS ships with native cluster monitoring (fake, but lore-friendly).
 
 ```bash
-cd /path/to/your/project
-~/.waas/scripts/install.sh maid --target=antigravity
+waas get waifus
+```
+*Output:*
+```text
+NAME                       STATUS    RESTARTS   AGE
+tsundere                   Running   0          4d
+kuudere                    Running   0          4d
+architecture-board         Running   0          1d
 ```
 
-### Switching Personalities
-
-Zero-downtime hot-swapping is supported out of the box via the Dere Runtime™:
-
 ```bash
-~/.waas/scripts/switch-personality.sh chuuni
+waas logs chuuni
+```
+*Output:*
+```text
+[WARNING] Ancient architectural corruption detected on port 8080.
 ```
 
 ## Archetype Matrix

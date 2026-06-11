@@ -1,0 +1,174 @@
+#!/bin/bash
+# Waifu-as-a-Service (WaaS) Enterprise Orchestrator
+# A Kubernetes-style CLI for deploying personality overlays
+
+set -e
+
+COMMAND=$1
+
+if [ -z "$COMMAND" ]; then
+    echo "Waifu-as-a-Service (WaaS) CLI"
+    echo "Usage: ./waas <command>"
+    echo ""
+    echo "Commands:"
+    echo "  deploy <archetype> [--target=<agent>]"
+    echo "  deploy harem <harem-name> [--target=<agent>]"
+    echo "  get waifus"
+    echo "  logs <waifu>"
+    exit 1
+fi
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+WAAS_ROOT="$SCRIPT_DIR"
+
+if [ "$COMMAND" == "get" ]; then
+    if [ "$2" == "waifus" ] || [ "$2" == "harems" ]; then
+        echo "NAME                       STATUS    RESTARTS   AGE"
+        echo "tsundere                   Running   0          4d"
+        echo "kuudere                    Running   0          4d"
+        echo "yandere                    Running   1 (OOM)    4d"
+        echo "genki                      Running   0          4d"
+        echo "architecture-board         Running   0          1d"
+        echo "bug-extermination-squad    Running   0          1d"
+    else
+        echo "Error: Unknown resource type '$2'."
+    fi
+    exit 0
+fi
+
+if [ "$COMMAND" == "logs" ]; then
+    if [ "$2" == "chuuni" ]; then
+        echo "[WARNING] Ancient architectural corruption detected on port 8080."
+    elif [ "$2" == "yandere" ]; then
+        echo "[FATAL] Detected uncommitted changes. Initiating lockdown."
+    elif [ "$2" == "tsundere" ]; then
+        echo "[INFO] B-baka! It compiled successfully..."
+    else
+        echo "[INFO] Connection established. Dere Runtime™ stable."
+    fi
+    exit 0
+fi
+
+if [ "$COMMAND" == "deploy" ]; then
+    shift # remove 'deploy'
+    
+    MODE="single"
+    ARCHETYPE=""
+    HAREM=""
+    TARGET="claude"
+
+    if [ "$1" == "harem" ]; then
+        MODE="harem"
+        HAREM=$2
+        shift 2
+    else
+        ARCHETYPE=$1
+        shift
+    fi
+
+    for arg in "$@"; do
+      case $arg in
+        --target=*)
+          TARGET="${arg#*=}"
+          shift
+          ;;
+      esac
+    done
+
+    # Setup OUT_FILE and TEMPLATE
+    if [ "$TARGET" == "claude" ]; then
+        OUT_FILE="CLAUDE.md"
+        TEMPLATE="$WAAS_ROOT/templates/CLAUDE.template.md"
+    elif [ "$TARGET" == "gemini" ]; then
+        OUT_FILE="GEMINI.md"
+        TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md" 
+    elif [ "$TARGET" == "cursor" ]; then
+        OUT_FILE=".cursorrules"
+        TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"
+    elif [ "$TARGET" == "codex" ]; then
+        OUT_FILE=".codexrules"
+        TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"
+    elif [ "$TARGET" == "antigravity" ]; then
+        OUT_FILE="AGENTS.md"
+        TEMPLATE="$WAAS_ROOT/templates/AGENTS.template.md"
+    else
+        echo "Error: Unknown target '$TARGET'."
+        exit 1
+    fi
+
+    echo "✓ Initializing Dere Runtime™..."
+
+    TMP_ARCH_FILE=$(mktemp)
+
+    if [ "$MODE" == "harem" ]; then
+        echo "✓ Preparing Harem Runtime™..."
+        HAREM_FILE="$WAAS_ROOT/harems/${HAREM}"
+        if [ ! -f "$HAREM_FILE" ]; then
+            echo "Error: Harem '${HAREM}' not found in harems/ directory."
+            exit 1
+        fi
+        
+        MEMBERS=$(cat "$HAREM_FILE")
+        echo "✓ Assembling harem: $(echo $MEMBERS | tr '\n' ' ')"
+        
+        cat "$WAAS_ROOT/base/harem-runtime.md" >> "$TMP_ARCH_FILE"
+        echo "" >> "$TMP_ARCH_FILE"
+        
+        for member in $MEMBERS; do
+            MEMBER_FILE="$WAAS_ROOT/archetypes/${member}.md"
+            if [ -f "$MEMBER_FILE" ]; then
+                echo "## Member Configuration: $member" >> "$TMP_ARCH_FILE"
+                # Shift headers down to nest properly
+                cat "$MEMBER_FILE" | sed 's/^# /### /g' >> "$TMP_ARCH_FILE"
+                echo "" >> "$TMP_ARCH_FILE"
+            fi
+        done
+        echo "✓ Deploying Harem: $HAREM to $OUT_FILE..."
+    else
+        ARCHETYPE_FILE="$WAAS_ROOT/archetypes/${ARCHETYPE}.md"
+        if [ ! -f "$ARCHETYPE_FILE" ]; then
+            echo "Error: Archetype '${ARCHETYPE}' not found in the matrix."
+            exit 1
+        fi
+        echo "✓ Loading personality overlay..."
+        cat "$ARCHETYPE_FILE" >> "$TMP_ARCH_FILE"
+        echo "✓ Deploying ${ARCHETYPE}-v3 to $OUT_FILE..."
+    fi
+
+    export ARCH_CONTENT=$(cat "$TMP_ARCH_FILE")
+    export CODING_CONTENT=$(cat "$WAAS_ROOT/base/coding-rules.md")
+    export SAFETY_CONTENT=$(cat "$WAAS_ROOT/base/safety-rules.md")
+
+    cp "$TEMPLATE" "$OUT_FILE"
+
+    perl -pi -e 's/\{\{BASE_CODING_RULES\}\}/$ENV{CODING_CONTENT}/g' "$OUT_FILE"
+    perl -pi -e 's/\{\{BASE_SAFETY_RULES\}\}/$ENV{SAFETY_CONTENT}/g' "$OUT_FILE"
+    perl -pi -e 's/\{\{ARCHETYPE_CONTENT\}\}/$ENV{ARCH_CONTENT}/g' "$OUT_FILE"
+    
+    rm "$TMP_ARCH_FILE"
+
+    echo ""
+    echo "Deployment successful."
+    
+    if [ "$MODE" == "harem" ]; then
+        echo "Harem Consensus Engine™ is active."
+    else
+        case $ARCHETYPE in
+            tsundere) echo "Agent is now emotionally unavailable but highly competent." ;;
+            kuudere)  echo "Agent is now processing requests with maximum efficiency and zero warmth." ;;
+            dandere)  echo "Agent is now hiding behind the terminal, waiting to gently assist you." ;;
+            yandere)  echo "Agent is now obsessively monitoring your commits. Do not break the build." ;;
+            genki)    echo "Agent has consumed 4 energy drinks and is ready to code!!!" ;;
+            onee-san) echo "Agent is now offering Staff-level mentorship and tea." ;;
+            chuuni)   echo "The forbidden seals are unlocked. The dark code review begins." ;;
+            gyaru)    echo "Agent is now judging your CSS aesthetics. It's a vibe." ;;
+            senpai)   echo "Agent is now reminiscing about Perl scripts and reviewing your PR." ;;
+            maid)     echo "Agent has prepared the repository for your arrival, Master." ;;
+            *)        echo "Agent personality successfully overwritten." ;;
+        esac
+    fi
+    exit 0
+fi
+
+echo "Error: Invalid command."
+exit 1
